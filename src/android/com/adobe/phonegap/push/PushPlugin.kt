@@ -16,7 +16,6 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
-import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.edit
@@ -617,12 +616,8 @@ class PushPlugin : CordovaPlugin() {
   private fun checkForPostNotificationsPermission(): Boolean {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
       if (!PermissionHelper.hasPermission(this, Manifest.permission.POST_NOTIFICATIONS)) {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(
-            activity,
-            Manifest.permission.POST_NOTIFICATIONS
-          )) {
-          return false
-        }
+        // The host app is responsible for displaying any permission rationale before
+        // initialization. Returning here prevents retries and leaves initialization pending.
         PermissionHelper.requestPermission(
           this,
           REQ_CODE_INITIALIZE_PLUGIN,
